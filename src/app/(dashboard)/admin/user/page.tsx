@@ -1,7 +1,8 @@
+import UserManagement from "./_components/user";
+export const metadata = {
+  title: "Food | User Management",
+};
+
 export default function UserManagementPage() {
-  return (
-    <div>
-      <h1>User Managemenet</h1>
-    </div>
-  );
+  return <UserManagement />;
 }
