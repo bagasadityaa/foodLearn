@@ -1,9 +1,22 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/client";
+import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { useQuery } from "@tanstack/react-query";
+import { EllipsisVertical, Trash } from "lucide-react";
 import { toast } from "sonner";
 
 export default function UserManagement() {
@@ -36,13 +49,36 @@ export default function UserManagement() {
           </Dialog>
         </div>
       </div>
-
+      {isLoading && <div>Loading</div>}
       {users?.map((user) => {
         return (
-          <div key={user.id}>
-            <h2>{user.name}</h2>
-            <h2>{user.role}</h2>
-          </div>
+          <Card key={user.id}>
+            <CardHeader className="flex flex-row justify-between items-center py-2.5 space-x-2.5 ">
+              <div className="flex space-x-5 items-center ">
+                <img
+                  src={user.avatar_url}
+                  className="w-10 h-10 object-cover object-top rounded-lg"
+                />
+                <CardTitle>
+                  {user.name}
+                  <CardDescription className="capitalize">
+                    {user.role}
+                  </CardDescription>
+                </CardTitle>
+              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <EllipsisVertical />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem className="bg-red-500 space-x-5">
+                    <Trash />
+                    Delete Account
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </CardHeader>
+          </Card>
         );
       })}
     </div>
