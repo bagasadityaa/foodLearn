@@ -2,46 +2,44 @@
 import DataTable from "@/components/common/data-table";
 import DropdownAction from "@/components/common/dropdown-common";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { HEADER_TABLE_USER } from "@/constants/user-constant";
+import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
-import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { useQuery } from "@tanstack/react-query";
-import { EllipsisVertical, Pencil, Trash } from "lucide-react";
+import { Pencil, Trash } from "lucide-react";
 import { useMemo } from "react";
 import { toast } from "sonner";
 
 export default function UserManagement() {
   const supabase = createClient();
+  const { currentPage, currentLimit, handleChangePage, handleChangeLimit } =
+    useDataTable();
   const { data: users, isLoading } = useQuery({
-    queryKey: ["users"],
+    queryKey: ["users", currentPage, currentLimit],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const result = await supabase
         .from("profiles")
         .select("*", { count: "exact" })
+        // page =1
+        // limit =10
+        // .range(0,9)
+
+        .range((currentPage - 1) * currentLimit, currentPage * currentLimit - 1)
         .order("created_at");
-      if (error)
+      if (result.error)
         toast.error("Get User Data Failed", {
-          description: error.message,
+          description: result.error.message,
         });
 
-      return data;
+      return result;
     },
   });
+
+  console.log("users", users);
   const filterData = useMemo(() => {
-    return (users || []).map((user, index) => {
+    return (users?.data || []).map((user, index) => {
       return [
         index + 1,
         user.id,
@@ -73,6 +71,13 @@ export default function UserManagement() {
       ];
     });
   }, [users]);
+
+  console.log("filterData", filterData);
+  const totalPage = useMemo(() => {
+    return users && users.count !== null
+      ? Math.ceil(users.count / currentLimit)
+      : 0;
+  }, []);
   return (
     <div className="w-full">
       <div className="flex flex-col lg:flex-row mb-4 gap-2 justify-between w-full">
@@ -91,6 +96,11 @@ export default function UserManagement() {
         header={HEADER_TABLE_USER}
         data={filterData}
         isLoading={isLoading}
+        totalPages={totalPage}
+        currentPage={currentPage}
+        currentLimit={currentLimit}
+        onChangePage={handleChangePage}
+        onChangeLimit={handleChangeLimit}
       />
       {/* {users?.map((user) => {
         return (

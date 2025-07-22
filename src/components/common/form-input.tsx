@@ -28,7 +28,7 @@ export default function FormInput<T extends FieldValues>({
       name={name}
       render={({ field: { ...rest } }) => (
         <FormItem>
-          <FormLabel>Email</FormLabel>
+          <FormLabel>{label}</FormLabel>
           <FormControl>
             {type === "textarea" ? (
               <Textarea
