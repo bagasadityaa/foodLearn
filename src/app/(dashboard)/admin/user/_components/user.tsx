@@ -1,5 +1,6 @@
 "use client";
 import DataTable from "@/components/common/data-table";
+import DropdownAction from "@/components/common/dropdown-common";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,7 +19,7 @@ import { HEADER_TABLE_USER } from "@/constants/user-constant";
 import { createClient } from "@/lib/supabase/client";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { useQuery } from "@tanstack/react-query";
-import { EllipsisVertical, Trash } from "lucide-react";
+import { EllipsisVertical, Pencil, Trash } from "lucide-react";
 import { useMemo } from "react";
 import { toast } from "sonner";
 
@@ -41,7 +42,35 @@ export default function UserManagement() {
   });
   const filterData = useMemo(() => {
     return (users || []).map((user, index) => {
-      return [index + 1, user.id, user.name, user.role, ""];
+      return [
+        index + 1,
+        user.id,
+        user.name,
+        user.role,
+        <DropdownAction
+          menu={[
+            {
+              label: (
+                <span className="flex items-center gap-2">
+                  <Pencil />
+                  Edit
+                </span>
+              ),
+              action: () => {},
+            },
+            {
+              label: (
+                <span className="flex items-center gap-2">
+                  <Trash className="text-red-400" />
+                  Delete
+                </span>
+              ),
+              variant: "destructive",
+              action: () => {},
+            },
+          ]}
+        />,
+      ];
     });
   }, [users]);
   return (
