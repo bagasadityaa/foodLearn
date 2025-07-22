@@ -77,7 +77,8 @@ export default function UserManagement() {
     return users && users.count !== null
       ? Math.ceil(users.count / currentLimit)
       : 0;
-  }, []);
+  }, [users]);
+  console.log("total page", totalPage);
   return (
     <div className="w-full">
       <div className="flex flex-col lg:flex-row mb-4 gap-2 justify-between w-full">
