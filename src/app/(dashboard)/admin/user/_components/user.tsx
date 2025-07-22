@@ -1,4 +1,5 @@
 "use client";
+import DataTable from "@/components/common/data-table";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,10 +14,12 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { HEADER_TABLE_USER } from "@/constants/user-constant";
 import { createClient } from "@/lib/supabase/client";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { useQuery } from "@tanstack/react-query";
 import { EllipsisVertical, Trash } from "lucide-react";
+import { useMemo } from "react";
 import { toast } from "sonner";
 
 export default function UserManagement() {
@@ -36,6 +39,11 @@ export default function UserManagement() {
       return data;
     },
   });
+  const filterData = useMemo(() => {
+    return (users || []).map((user, index) => {
+      return [index + 1, user.id, user.name, user.role, ""];
+    });
+  }, [users]);
   return (
     <div className="w-full">
       <div className="flex flex-col lg:flex-row mb-4 gap-2 justify-between w-full">
@@ -50,7 +58,12 @@ export default function UserManagement() {
         </div>
       </div>
       {isLoading && <div>Loading</div>}
-      {users?.map((user) => {
+      <DataTable
+        header={HEADER_TABLE_USER}
+        data={filterData}
+        isLoading={isLoading}
+      />
+      {/* {users?.map((user) => {
         return (
           <Card key={user.id}>
             <CardHeader className="flex flex-row justify-between items-center py-2.5 space-x-2.5 ">
@@ -80,7 +93,7 @@ export default function UserManagement() {
             </CardHeader>
           </Card>
         );
-      })}
+      })} */}
     </div>
   );
 }
